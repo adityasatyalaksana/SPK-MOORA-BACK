@@ -5,23 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Biaya;
 use App\Models\Terminal;
+use App\Models\Jalur; // Penting: Import Model Jalur
 use Illuminate\Http\Request;
 
 class BiayaController extends Controller
 {
     public function index()
     {
-        $biayas = Biaya::with(['start_terminal', 'end_terminal'])->latest()->get();
+        // Menambahkan 'jalur.gunung' agar nama gunung bisa tampil di tabel
+        $biayas = Biaya::with(['start_terminal', 'end_terminal', 'jalur.gunung'])->latest()->get();
+        
+        // Data untuk dropdown di modal
         $startPoints = Terminal::where('tipe', 'Starting Point')->get();
         $endPoints = Terminal::where('tipe', 'Ending Point')->get();
+        $jalurs = Jalur::with('gunung')->get();
 
-        return view('admin.biaya.index', compact('biayas', 'startPoints', 'endPoints'));
+        return view('admin.biaya.index', compact('biayas', 'startPoints', 'endPoints', 'jalurs'));
     }
 
-    // PASTIKAN BAGIAN INI ADA
     public function store(Request $request)
     {
         $request->validate([
+            'jalur_id' => 'required|exists:jalurs,id', // Validasi jalur harus diisi
             'start_terminal_id' => 'required',
             'end_terminal_id' => 'required',
             'nama_armada' => 'required',
@@ -37,6 +42,7 @@ class BiayaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'jalur_id' => 'required|exists:jalurs,id',
             'start_terminal_id' => 'required',
             'end_terminal_id' => 'required',
             'nama_armada' => 'required',

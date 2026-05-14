@@ -79,7 +79,7 @@
                                         <tr>
                                             <th class="px-3">Nama Jalur</th>
                                             <th>Kesulitan</th>
-                                            <th class="text-end px-3">Estimasi Biaya</th>
+                                            <th class="text-end px-3">Estimasi Waktu</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -91,9 +91,11 @@
                                                         {{ $jalur->tingkat_kesulitan ?? 'Sedang' }}
                                                     </span>
                                                 </td>
-                                                <td class="text-end px-3 fw-bold text-primary">
-                                                    {{-- Asumsi kolom biaya bernama 'estimasi_biaya' di tabel jalurs --}}
-                                                    Rp {{ number_format($jalur->biaya_simaksi ?? 0, 0, ',', '.') }}
+                                                <td class="text-end px-3">
+                                                    <span class="fw-bold text-primary">
+                                                        {{-- Menampilkan estimasi jam --}}
+                                                        {{ $jalur->estimasi_jam ?? '-' }} Jam
+                                                    </span>
                                                 </td>
                                             </tr>
                                         @empty

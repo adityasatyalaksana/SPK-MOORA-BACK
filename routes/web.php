@@ -1,19 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\GunungController;
-use App\Http\Controllers\Admin\TerminalController;
-use App\Http\Controllers\Admin\JalurController;
-use App\Http\Controllers\Admin\BiayaController;
-use App\Http\Controllers\Admin\KriteriaController;
-use App\Http\Controllers\Admin\SubKriteriaController;
-use App\Http\Controllers\Admin\PenilaianController;
-use App\Http\Controllers\Admin\HasilController;
-use App\Http\Controllers\Admin\UserController;
+
+// --- CONTROLLER PUBLIK / PENDAKI ---
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\ProfileController; // Pastikan ini terpanggil
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RekomendasiController;
+use App\Http\Controllers\AuthController;
+
+// --- CONTROLLER ADMIN (Dikelompokkan) ---
+use App\Http\Controllers\Admin\{
+    DashboardController,
+    GunungController,
+    TerminalController,
+    JalurController,
+    BiayaController,
+    KriteriaController,
+    SubKriteriaController,
+    PenilaianController,
+    HasilController,
+    UserController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -22,10 +29,16 @@ use App\Http\Controllers\ProfileController; // Pastikan ini terpanggil
 */
 Route::get('/', [BerandaController::class, 'index'])->name('beranda.index');
 
-// PERBAIKAN: Arahkan ke ProfileController agar relasi Jalur tersinkronisasi
+// Halaman Profil Gunung
 Route::get('/profile-gunung', [ProfileController::class, 'index'])->name('pendaki.profile.index');
 
-Route::get('/cari-rekomendasi', [BerandaController::class, 'rekomendasi'])->name('beranda.rekomendasi');
+/** 
+ * FITUR CARI REKOMENDASI
+ * Menggunakan RekomendasiController untuk logika MOORA & Budgeting
+ */
+// Cari bagian FITUR CARI REKOMENDASI dan ubah menjadi:
+Route::get('/cari-rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
+Route::get('/pilihan-gunung', [RekomendasiController::class, 'proses'])->name('rekomendasi.proses');
 
 /*
 |--------------------------------------------------------------------------
@@ -99,7 +112,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     
     Route::get('/hasil', [HasilController::class, 'index'])->name('hasil.perhitungan');
 
-    // 8. Kelola User (Gunakan Resource agar lebih ringkas)
+    // 8. Kelola User
     Route::resource('users', UserController::class)->names([
         'index'   => 'users.index',
         'create'  => 'users.create',

@@ -28,6 +28,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">No</th>
+                            <th>Jalur Gunung</th>
                             <th>Armada</th>
                             <th>Rute (Start → End)</th>
                             <th>Estimasi</th>
@@ -40,6 +41,10 @@
                         @forelse ($biayas as $key => $item)
                         <tr>
                             <td class="ps-4">{{ $key + 1 }}</td>
+                            <td>
+                                <span class="fw-bold text-primary">{{ $item->jalur->gunung->nama_gunung ?? '-' }}</span><br>
+                                <small class="text-muted">Via: {{ $item->jalur->nama_jalur ?? '-' }}</small>
+                            </td>
                             <td><span class="fw-bold text-dark">{{ $item->nama_armada }}</span></td>
                             <td>
                                 <span class="badge border border-primary text-primary">{{ $item->start_terminal->nama_terminal }}</span>
@@ -60,12 +65,10 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex justify-content-center gap-2">
-                                    {{-- TOMBOL EDIT --}}
                                     <button class="btn btn-sm btn-info text-white" data-bs-toggle="modal" data-bs-target="#modalEditBiaya{{ $item->id }}">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
                                     
-                                    {{-- TOMBOL HAPUS --}}
                                     <form action="{{ route('biaya.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus data?')">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-outline-danger border-0">
@@ -76,7 +79,7 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL EDIT BIAYA REGULER --}}
+                        {{-- MODAL EDIT BIAYA --}}
                         <div class="modal fade" id="modalEditBiaya{{ $item->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-0 shadow">
@@ -87,6 +90,16 @@
                                     <form action="{{ route('biaya.update', $item->id) }}" method="POST">
                                         @csrf @method('PUT')
                                         <div class="modal-body p-4 text-start">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold small">UNTUK JALUR PENDAKIAN</label>
+                                                <select name="jalur_id" class="form-select" required>
+                                                    @foreach($jalurs as $j)
+                                                        <option value="{{ $j->id }}" {{ $item->jalur_id == $j->id ? 'selected' : '' }}>
+                                                            {{ $j->gunung->nama_gunung }} - {{ $j->nama_jalur }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold small">NAMA ARMADA</label>
                                                 <input type="text" name="nama_armada" class="form-control" value="{{ $item->nama_armada }}" required>
@@ -128,7 +141,7 @@
                             </div>
                         </div>
                         @empty
-                        <tr><td colspan="7" class="text-center py-5">Belum ada data.</td></tr>
+                        <tr><td colspan="8" class="text-center py-5">Belum ada data.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -137,7 +150,7 @@
     </div>
 </div>
 
-{{-- MODAL TAMBAH (Fungsi tetap sama seperti sebelumnya) --}}
+{{-- MODAL TAMBAH --}}
 <div class="modal fade" id="modalTambahBiaya" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -148,6 +161,15 @@
             <form action="{{ route('biaya.store') }}" method="POST">
                 @csrf
                 <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">UNTUK JALUR PENDAKIAN</label>
+                        <select name="jalur_id" class="form-select" required>
+                            <option value="" disabled selected>Pilih Jalur Gunung</option>
+                            @foreach($jalurs as $j)
+                                <option value="{{ $j->id }}">{{ $j->gunung->nama_gunung }} - {{ $j->nama_jalur }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">NAMA ARMADA</label>
                         <input type="text" name="nama_armada" class="form-control" required>
@@ -185,7 +207,7 @@
     </div>
 </div>
 
-{{-- MODAL SET HARGA PERIODE (APPLY PRICE) --}}
+{{-- MODAL SET HARGA PERIODE --}}
 <div class="modal fade" id="modalPeriodPrice" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">

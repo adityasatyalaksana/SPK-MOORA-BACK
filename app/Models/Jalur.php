@@ -17,13 +17,12 @@ class Jalur extends Model
         'tingkat_kesulitan'
     ];
 
-    // Relasi ke Gunung
     public function gunung()
     {
         return $this->belongsTo(Gunung::class, 'gunung_id');
     }
 
-    // Relasi ke Biaya (Penting agar data Terminal & Harga muncul di Penilaian)
+    // Menggunakan hasMany karena satu jalur bisa punya banyak pilihan armada bus
     public function biayas()
     {
         return $this->hasMany(Biaya::class, 'jalur_id');
